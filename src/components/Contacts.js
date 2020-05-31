@@ -17,6 +17,8 @@ class Contacts extends React.Component {
   }
 
   fetchUsers = async (page) => {
+    console.log("calld")
+    page = page ? page : 0
     let val = this.state.value; val = val.trim(); val = val.replace(/[/^ *$/]{2,}/g, " ");
     const path = val && val.length ? `/users?page=${page}&value=${val}` : `/users?page=${page}`;
     const { users, total } = (await axios.get(path)).data
@@ -29,7 +31,7 @@ class Contacts extends React.Component {
     alert(msg.err ? msg.err : msg);
   };
   onUserEdit = (i) => {
-    this.props.editRqst("Edit", { ...this.state.users[i] });
+    this.props.editRqst("Edit", { ...this.state.users[i] }, this.fetchUsers);
   };
 
   handleClick = (e, titleProps) => {
@@ -39,7 +41,7 @@ class Contacts extends React.Component {
 
     this.setState({ activeIndex: newIndex });
   };
-  pageChange = (e, { activePage }) => this.fetchUsers(activePage - 1);
+  pageChange = (e, { activePage }) => { this.fetchUsers(activePage - 1); }
   renderUser = (user, i) => {
 
     const { activeIndex } = this.state;

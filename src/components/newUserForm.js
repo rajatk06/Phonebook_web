@@ -15,15 +15,14 @@ class Input extends React.Component {
   state = { ...default_state }
 
   static getDerivedStateFromProps = (props, state) => {
-    //console.log(props)
-    if (props.formType === "Edit" && !state.modalOpen) return _.assign(props.formData, { modalOpen: true })
-    return { modalOpen: false }
+    if (props.formType === "Edit" && !state.modalOpen) return { ...props.formData, modalOpen: true }
+    return null;
   }
   onPhoneNumber = async () => {
     const num = this.state.curr_phone;
     const msg = (await axios.post("/validate", { field: "phone", value: num })).data
 
-    if (msg.err) return false;
+    if (msg.err) this.setState({ err: "Phone No. already registered" })
     else {
       if (num.length !== 10) this.setState({ err: "Phone No. invalid" })
       else if (this.state.phone.includes(num)) this.setState({ err: "Phone No. already added" })
@@ -60,16 +59,20 @@ class Input extends React.Component {
   submit = async () => {
     if (!this.state.phone.length) this.setState({ err: "Phone No. required" })
     else {
+      let user_data;
       if (this.state._id === "") {
-        const msg = (await axios.post("/users", _.omit(this.state, ["_id", "err", "curr_phone", "curr_email", "modalOpen"]))).data
-        console.log(msg)
+        user_data = _.omit(this.state, ["_id", "err", "curr_phone", "curr_email", "modalOpen"]);
+        const msg = (await axios.post("/users", user_data)).data
+        alert(msg.err ? msg.err : msg);
       }
       else {
-        const msg = (await axios.put("/users", _.omit(this.state, ["err", "curr_phone", "curr_email", "modalOpen"]))).data
-        console.log(msg)
+        user_data = _.omit(this.state, ["err", "curr_phone", "curr_email", "modalOpen"])
+        const msg = (await axios.put("/users", user_data)).data
+        alert(msg.err ? msg.err : msg);
       }
+      this.props.resetType(user_data);
+      this.setState({ ...default_state })
     }
-    this.setState({ ...default_state })
   }
   render = () => {
     return (
@@ -81,7 +84,10 @@ class Input extends React.Component {
         }
         centered={false}
         open={this.state.modalOpen}
-        onClose={() => this.setState({ modalOpen: false })}
+        onClose={() => {
+          this.props.resetType();
+          this.setState({ ...default_state })
+        }}
         closeIcon
       >
         <Modal.Header>{this.props.formType} User</Modal.Header>
