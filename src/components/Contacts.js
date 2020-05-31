@@ -17,7 +17,6 @@ class Contacts extends React.Component {
   }
 
   fetchUsers = async (page) => {
-    console.log("calld")
     page = page ? page : 0
     let val = this.state.value; val = val.trim(); val = val.replace(/[/^ *$/]{2,}/g, " ");
     const path = val && val.length ? `/users?page=${page}&value=${val}` : `/users?page=${page}`;
