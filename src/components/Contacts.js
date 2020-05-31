@@ -1,9 +1,9 @@
 import React from "react";
 import axios from "../apis/axios"
-import { List, Segment, Icon, Accordion, Pagination } from "semantic-ui-react";
+import { List, Segment, Icon, Accordion, Pagination, Dimmer, Loader } from "semantic-ui-react";
 class Contacts extends React.Component {
   state = {
-    activeIndex: 0, users: [], total: 0, value: ""
+    activeIndex: 0, users: [], total: 0, value: "", fetching: false
   };
 
   componentDidMount = () => { this.fetchUsers(0); this.props.setFetch(this.fetchUsers) }
@@ -17,12 +17,15 @@ class Contacts extends React.Component {
   }
 
   fetchUsers = async (page) => {
+    this.setState({ fetching: true })
     page = page ? page : 0
     let val = this.state.value; val = val.trim(); val = val.replace(/[/^ *$/]{2,}/g, " ");
     const path = val && val.length ? `/users?page=${page}&value=${val}` : `/users?page=${page}`;
     const { users, total } = (await axios.get(path)).data
     if (users)
       this.setState({ users, total })
+    setTimeout(() => { this.setState({ fetching: false }) }, 500)
+
   }
   onUserDelete = async (_id, i) => {
     const msg = (await axios.delete(`/users?_id=${_id}`)).data
@@ -87,7 +90,12 @@ class Contacts extends React.Component {
   render() {
     return (
       <>
-        {this.state.users.map((user, i) => this.renderUser(user, i))}
+
+        {this.state.fetching ? <Segment style={{ height: "30vh" }}>
+          <Dimmer active inverted>
+            <Loader size='large'>Loading</Loader>
+          </Dimmer>
+        </Segment> : this.state.users.map((user, i) => this.renderUser(user, i))}
         <br />
         <center>
           <Pagination defaultActivePage={0} totalPages={this.state.total / 4} onPageChange={this.pageChange} />
