@@ -6,16 +6,19 @@ import Search from "./SearchBar";
 import Contacts from "./Contacts";
 
 class App extends React.Component {
-  state = { value: "" }
+  state = { value: "", formType: "Add", formData: {} }
   render = () => {
     return (
       <div style={{ margin: "0 15vw 0 15vw" }}>
         <Segment style={{ marginTop: "2rem" }}>
           <Search setValue={(value) => this.setState({ value })} />
-          <NewForm />
+          <NewForm formType={this.state.formType} formData={this.state.formData} />
         </Segment>
         <br />
-        <Contacts searchValue={this.state.value} />
+        <Contacts
+          searchValue={this.state.value}
+          editRqst={(formType, formData) => this.setState({ formType, formData })}
+        />
       </div>
     );
   };

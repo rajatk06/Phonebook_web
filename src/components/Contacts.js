@@ -28,8 +28,8 @@ class Contacts extends React.Component {
     this.fetchUsers(i < 4 ? 0 : (i + 1) / 4)
     alert(msg.err ? msg.err : msg);
   };
-  onUserEdit = (_id, i) => {
-    console.log(_id, i)
+  onUserEdit = (i) => {
+    this.props.editRqst("Edit", { ...this.state.users[i] });
   };
 
   handleClick = (e, titleProps) => {
@@ -39,7 +39,7 @@ class Contacts extends React.Component {
 
     this.setState({ activeIndex: newIndex });
   };
-  pageChange = (e, { activePage }) => { if (activePage + 1 >= 0 && activePage + 1 <= this.state.total / 4) this.fetchUsers(activePage - 1); }
+  pageChange = (e, { activePage }) => this.fetchUsers(activePage - 1);
   renderUser = (user, i) => {
 
     const { activeIndex } = this.state;
@@ -74,7 +74,7 @@ class Contacts extends React.Component {
                 name="edit"
                 color="green"
                 size="big"
-                onClick={() => this.onUserEdit(user._id, i)}
+                onClick={() => this.onUserEdit(i)}
               />
             </div>
           </div>
