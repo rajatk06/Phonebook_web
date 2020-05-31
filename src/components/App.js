@@ -19,8 +19,8 @@ class App extends React.Component {
         </Segment>
         <br />
         <Contacts
-          searchValue={this.state.value}
-          editRqst={(formType, formData, fetch) => this.setState({ formType, formData, fetch })}
+          searchValue={this.state.value} setFetch={fetch => this.setState({ fetch })}
+          editRqst={(formType, formData) => this.setState({ formType, formData })}
         />
       </div>
     );

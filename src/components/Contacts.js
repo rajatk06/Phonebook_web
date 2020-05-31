@@ -6,7 +6,7 @@ class Contacts extends React.Component {
     activeIndex: 0, users: [], total: 0, value: ""
   };
 
-  componentDidMount = () => this.fetchUsers(0)
+  componentDidMount = () => { this.fetchUsers(0); this.props.setFetch(this.fetchUsers) }
 
   componentDidUpdate = () => {
     if (this.props.searchValue !== this.state.value) {
@@ -30,7 +30,7 @@ class Contacts extends React.Component {
     alert(msg.err ? msg.err : msg);
   };
   onUserEdit = (i) => {
-    this.props.editRqst("Edit", { ...this.state.users[i] }, this.fetchUsers);
+    this.props.editRqst("Edit", { ...this.state.users[i] });
   };
 
   handleClick = (e, titleProps) => {
