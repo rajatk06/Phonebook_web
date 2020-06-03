@@ -7,7 +7,7 @@ const default_state = {
   _id: "",
   name: "",
   email: [], phone: [],
-  err: undefined,
+  phn_err: undefined, email_err: undefined,
   modalOpen: false,
   curr_email: "", curr_phone: ""
 }
@@ -20,23 +20,31 @@ class Input extends React.Component {
   }
   onPhoneNumber = async () => {
     const num = this.state.curr_phone;
+    if (num.length !== 10) {
+      this.setState({ phn_err: "Phone No. invalid" }); return;
+    }
+    if (this.state.phone.includes(num)) {
+      this.setState({ phn_err: "Phone No. already registered" }); return;
+    }
     const msg = (await axios.post("/validate", { field: "phone", value: num })).data
 
-    if (msg.err) this.setState({ err: "Phone No. already registered" })
-    else {
-      if (num.length !== 10) this.setState({ err: "Phone No. invalid" })
-      else if (this.state.phone.includes(num)) this.setState({ err: "Phone No. already added" })
-      else this.setState({ phone: [...this.state.phone, num], curr_phone: "", err: undefined });
-    }
+    if (msg.err) this.setState({ phn_err: msg.err })
+    else this.setState({ phone: [...this.state.phone, num], curr_phone: "", phn_err: undefined });
+
   };
   onEmail = async () => {
     const email = this.state.curr_email
+    // eslint-disable-next-line
+    if (!email.length || !/^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/.test(email)) {
+      this.setState({ email_err: "Invalid E-mail" }); return;
+    } if (this.state.email.includes(email)) {
+      this.setState({ email_err: "E-mail already registered" })
+      return;
+    }
     const msg = (await axios.post("/validate", { field: "email", value: email })).data
 
-    if (msg.err) return false;
-    // eslint-disable-next-line
-    else if (email.length && /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/.test(email) && !this.state.email.includes(email))
-      this.setState({ email: [...this.state.email, email], curr_email: "" });
+    if (msg.err) this.setState({ email_err: msg.err })
+    else this.setState({ email: [...this.state.email, email], curr_email: "", email_err: undefined });
   };
   handleChange = (e, { name, value }) => this.setState({ [name]: value });
   removeTag = (field, t) => {
@@ -57,7 +65,7 @@ class Input extends React.Component {
     );
   });
   submit = async () => {
-    if (!this.state.phone.length) this.setState({ err: "Phone No. required" })
+    if (!this.state.phone.length) this.setState({ phn_err: "Phone No. required" })
     else {
       let user_data;
       if (this.state._id === "") {
@@ -107,7 +115,7 @@ class Input extends React.Component {
                 name="curr_phone"
                 value={this.state.curr_phone}
                 onChange={this.handleChange}
-                error={this.state.err}
+                error={this.state.phn_err}
               />
               <Icon
                 name="add"
@@ -125,6 +133,7 @@ class Input extends React.Component {
                 name="curr_email"
                 value={this.state.curr_email}
                 onChange={this.handleChange}
+                error={this.state.email_err}
               />
               <Icon
                 name="add"
