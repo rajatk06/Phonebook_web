@@ -7,15 +7,16 @@ import {
   Accordion,
   Pagination,
   Dimmer,
-  Loader,
+  Loader
 } from "semantic-ui-react";
+const LIMIT = 4;
 class Contacts extends React.Component {
   state = {
     activeIndex: 0,
     users: [],
     total: 0,
     value: "",
-    fetching: false,
+    fetching: false
   };
 
   componentDidMount = () => {
@@ -31,9 +32,8 @@ class Contacts extends React.Component {
     }
   };
 
-  fetchUsers = async (page) => {
+  fetchUsers = async (page = 0) => {
     this.setState({ fetching: true });
-    page = page ? page : 0;
     let val = this.state.value;
     val = val.trim();
     val = val.replace(/[/^ *$/]{2,}/g, " ");
@@ -42,14 +42,14 @@ class Contacts extends React.Component {
         ? `/users?page=${page}&value=${val}`
         : `/users?page=${page}`;
     const { users, total } = (await axios.get(path)).data;
-    if (users) this.setState({ users, total });
-    setTimeout(() => {
-      this.setState({ fetching: false });
-    }, 500);
+    if (users)
+      setTimeout(() => {
+        this.setState({ users, total, fetching: false });
+      }, 300);
   };
   onUserDelete = async (_id, i) => {
     const msg = (await axios.delete(`/users?_id=${_id}`)).data;
-    this.fetchUsers(i < 4 ? 0 : (i + 1) / 4);
+    this.fetchUsers((i + 1) / LIMIT);
     alert(msg.err ? msg.err : msg);
   };
   onUserEdit = (i) => {
@@ -84,7 +84,7 @@ class Contacts extends React.Component {
               style={{
                 display: "flex",
                 overflow: "auto",
-                paddingBottom: "1rem",
+                paddingBottom: "1rem"
               }}
             >
               <List>
@@ -124,7 +124,7 @@ class Contacts extends React.Component {
     return (
       <>
         {this.state.fetching ? (
-          <Segment style={{ height: "30vh" }}>
+          <Segment style={{ height: "25vh" }}>
             <Dimmer active inverted>
               <Loader size="large">Loading</Loader>
             </Dimmer>
@@ -133,13 +133,15 @@ class Contacts extends React.Component {
           this.state.users.map((user, i) => this.renderUser(user, i))
         )}
         <br />
-        <center>
-          <Pagination
-            defaultActivePage={0}
-            totalPages={this.state.total / 4}
-            onPageChange={this.pageChange}
-          />
-        </center>
+        {this.state.total > LIMIT ? (
+          <center>
+            <Pagination
+              defaultActivePage={1}
+              totalPages={this.state.total / LIMIT}
+              onPageChange={this.pageChange}
+            />
+          </center>
+        ) : null}
       </>
     );
   }
