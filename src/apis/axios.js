@@ -5,9 +5,9 @@ const apiURL = "https://phonebook-server.herokuapp.com/";
 // eslint-disable-next-line
 const localURL =
   window.location.protocol + "//" + window.location.hostname + ":" + 3001;
-
+// eslint-disable-next-line
 const URL = window.location.hostname === "localhost" ? localURL : apiURL;
 
 export default axios.create({
-  baseURL: URL
+  baseURL: URL,
 });
