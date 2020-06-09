@@ -39,8 +39,8 @@ class Contacts extends React.Component {
     val = val.replace(/[/^ *$/]{2,}/g, " ");
     const path =
       val && val.length
-        ? `/users?page=${parseInt(page)}&value=${val}`
-        : `/users?page=${parseInt(page)}`;
+        ? `/users?page=${Math.ceil(page)}&value=${val}`
+        : `/users?page=${Math.ceil(page)}`;
     const { users, total } = (await axios.get(path)).data;
     if (users)
       setTimeout(() => {
