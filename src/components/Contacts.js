@@ -11,13 +11,17 @@ import {
 } from "semantic-ui-react";
 const LIMIT = 4;
 class Contacts extends React.Component {
-  state = {
-    activeIndex: 0,
-    users: [],
-    total: 0,
-    value: "",
-    fetching: false
-  };
+  constructor() {
+    super();
+    this.state = {
+      activeIndex: 0,
+      users: [],
+      total: 0,
+      val: "",
+      opr: "name",
+      fetching: false
+    };
+  }
 
   componentDidMount = () => {
     this.fetchUsers(0);
@@ -25,21 +29,24 @@ class Contacts extends React.Component {
   };
 
   componentDidUpdate = () => {
-    if (this.props.searchValue !== this.state.value) {
+    const { val, opr } = this.props.searchValue;
+    if (val !== this.state.val || opr !== this.state.opr) {
       // eslint-disable-next-line
-      this.state.value = this.props.searchValue;
+      this.state.val = val;
+      // eslint-disable-next-line
+      this.state.opr = opr;
       this.fetchUsers(0);
     }
   };
 
   fetchUsers = async (page = 0) => {
     this.setState({ fetching: true });
-    let val = this.state.value;
+    let { val, opr } = this.state;
     val = val.trim();
     val = val.replace(/[/^ *$/]{2,}/g, " ");
     const path =
       val && val.length
-        ? `/users?page=${Math.ceil(page)}&value=${val}`
+        ? `/users?page=${Math.ceil(page)}&val=${val}&opr=${opr}`
         : `/users?page=${Math.ceil(page)}`;
     const { users, total } = (await axios.get(path)).data;
     if (users)

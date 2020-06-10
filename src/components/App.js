@@ -6,12 +6,22 @@ import Search from "./SearchBar";
 import Contacts from "./Contacts";
 
 class App extends React.Component {
-  state = { value: "", formType: "Add", formData: {}, fetch: () => {} };
+  constructor() {
+    super();
+    this.state = {
+      val: "",
+      opr: "name",
+      formType: "Add",
+      formData: {},
+      fetch: () => {}
+    };
+  }
+
   render = () => {
     return (
       <div style={{ margin: "0 15vw 0 15vw" }}>
         <Segment style={{ marginTop: "2rem" }}>
-          <Search setValue={(value) => this.setState({ value })} />
+          <Search setValue={(val) => this.setState(val)} />
           <NewForm
             formType={this.state.formType}
             formData={this.state.formData}
@@ -23,7 +33,7 @@ class App extends React.Component {
         </Segment>
         <br />
         <Contacts
-          searchValue={this.state.value}
+          searchValue={{ val: this.state.val, opr: this.state.opr }}
           setFetch={(fetch) => this.setState({ fetch })}
           editRqst={(formType, formData) =>
             this.setState({ formType, formData })
