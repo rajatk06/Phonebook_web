@@ -49,10 +49,7 @@ class Contacts extends React.Component {
         ? `/users?page=${Math.ceil(page)}&val=${val}&opr=${opr}`
         : `/users?page=${Math.ceil(page)}`;
     const { users, total } = (await axios.get(path)).data;
-    if (users)
-      setTimeout(() => {
-        this.setState({ users, total, fetching: false });
-      }, 300);
+    if (users) this.setState({ users, total, fetching: false });
   };
   onUserDelete = async (_id, i) => {
     const msg = (await axios.delete(`/users?_id=${_id}`)).data;
